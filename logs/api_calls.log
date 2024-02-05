@@ -1,0 +1,4 @@
+02/05/2024 08:44:59 PM Successful GET request by get_10_random() method.
+02/05/2024 08:45:05 PM An error occurred while processing the request: 404 Client Error: Not Found for url: https://jsonplaceholder.typicode.com/postssss
+02/05/2024 08:45:07 PM An error occurred while processing the request: 404 Client Error: Not Found for url: https://jsonplaceholder.typicode.com/postssss
+02/05/2024 08:45:12 PM Successful GET request by get_10_random() method.
