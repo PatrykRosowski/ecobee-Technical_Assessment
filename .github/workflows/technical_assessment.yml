@@ -4,8 +4,6 @@
 name: technical_assessment CI
 
 on:
-  push:
-    branches: [ "main" ] # name of the branch being tested
   pull_request:
     branches: [ "main" ]
 # This environment variable is used to make requests to the hosted Facilities API
