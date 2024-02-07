@@ -118,3 +118,27 @@ def post_comment(postId, name, email, body):
     except (Exception) as err:
         logging.error(f'An error occurred while processing the request: {err}')
         return {}
+
+
+def delete_comment(comment_id):
+    """ 
+    DELETE a comment from the API.
+    comment_id -- the ID of the comment to be deleted
+    """
+
+    # Send a DELETE request to the server
+    try:
+        response = requests.delete(
+                    f'https://jsonplaceholder.typicode.com/comments/{comment_id}')
+        # Check if an error code was returned
+        response.raise_for_status()
+        # Log a successful request and return the response
+        logging.info('Successful DELETE request by delete_comment() method.')
+        return response
+
+    # If an error occurred, log it and return None
+    except (Exception) as err:
+        logging.error(f'An error occurred while processing the request: {err}')
+        return {}
+
+delete_comment(1)

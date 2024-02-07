@@ -16,7 +16,7 @@ def test_get_10_random_valid(mocker):
     """ Test the get_10_random() method for the correct sample size. """
 
     # 100 items of data to be returned from mock API 
-    data = [{'userID': randint(1, 10), 
+    data = [{'userId': randint(1, 10), 
              'id': i, 
              'title': f'Post {i}', 
              'body': 'abc'} 
@@ -39,13 +39,13 @@ def test_get_10_random_valid(mocker):
     # Validate that each post has the correct structure
     for result in results:
         assert isinstance(result, dict), "Each post should be a dictionary"
-        assert set(result.keys()) == {'userID', 'id', 'title', 'body'}
+        assert set(result.keys()) == {'userId', 'id', 'title', 'body'}
 
 
 def test_get_10_random_insuff_num(mocker):
     """ Test the get_10_random() method when the API returns insufficient data. """
     # 5 items of data to be returned from mock API 
-    data = [{'userID': randint(1, 10), 
+    data = [{'userId': randint(1, 10), 
              'id': i, 
              'title': f'Post {i}', 
              'body': 'abc'} 
@@ -68,7 +68,7 @@ def test_get_10_random_insuff_num(mocker):
     # Validate that each post has the correct structure
     for result in results:
         assert isinstance(result, dict), "Each post should be a dictionary"
-        assert set(result.keys()) == {'userID', 'id', 'title', 'body'}
+        assert set(result.keys()) == {'userId', 'id', 'title', 'body'}
 
 
 def test_get_10_random_connection_error(mocker):
@@ -108,7 +108,7 @@ def test_get_1_post_valid(mocker):
     """ Test the get_1_post() method for the correct post ID. """
 
     # 1 item of data to be returned from mock API 
-    data = {'userID': randint(1, 10), 
+    data = {'userId': randint(1, 10), 
              'id': 3, 
              'title': 'Post 3', 
              'body': 'abc'}
@@ -129,7 +129,7 @@ def test_get_1_post_valid(mocker):
 
     # Validate that the post has the correct structure
     assert isinstance(result, dict)
-    assert set(result.keys()) == {'userID', 'id', 'title', 'body'}
+    assert set(result.keys()) == {'userId', 'id', 'title', 'body'}
 
 
 def test_get_1_post_insuff_num(mocker):
@@ -180,4 +180,229 @@ def test_get_1_post_http_error(mocker):
     mocker.patch('requests.get', side_effect=requests.exceptions.HTTPError)
     # Validate that the result is an empty dictionary
     result = api_calls.get_1_post(1)
+    assert result == {}
+
+
+####################### get_comm_for_post() method tests #######################
+    
+
+def test_get_comm_for_post_valid(mocker):
+    """ Test the get_comm_for_post() method for the correct post ID. """
+
+    # 5 items of data to be returned from mock API 
+    data = [{'postId': 3, 
+             'id': i, 
+             'name': f'Comment {i}', 
+             'email': f'{i}@example.com', 
+             'body': f'Body {i}'} for i in range(1, 6)]
+
+    # Set up a Mock() object that simulates an API endpoint for local testing
+    mocker_get = mocker.patch('requests.get')
+    mocker_get.return_value = mocker.Mock()
+
+    # Mock() object returns 5 mock posts
+    mocker_get.return_value.json.return_value = data
+
+    # Call the get_comm_for_post() method with a valid post ID
+    result = api_calls.get_comm_for_post(3)
+    logging.info(f'\n\nRESULTS RETURNED BY THIS METHOD: {result}\n')
+
+    # Validate the result
+    assert result == data
+
+
+def test_get_comm_for_post_invalid_id(mocker):
+    """ Test the get_comm_for_post() method for an invalid post ID. """
+
+    # An empty list to be returned from mock API
+    data = []
+
+    # Set up a Mock() object that simulates an API endpoint for local testing
+    mocker_get = mocker.patch('requests.get')
+    mocker_get.return_value = mocker.Mock()
+
+    # Mock() object returns an empty list
+    mocker_get.return_value.json.return_value = data
+
+    # Call the get_comm_for_post() method with an invalid post ID
+    result = api_calls.get_comm_for_post(999)
+    logging.error(f'\n\nRESULTS RETURNED BY THIS METHOD: {result}\n')
+
+    # Validate the result
+    assert result == []
+
+
+def test_get_comm_for_post_connection_error(mocker):
+    """ Test the get_comm_for_post() method when a connection error occurs. """
+
+    # Simulate a ConnectionError in a GET request
+    mocker.patch('requests.get', side_effect=requests.exceptions.ConnectionError)
+    # Validate that the result is an empty list
+    result = api_calls.get_comm_for_post(1)
+    assert result == []
+
+
+def test_get_comm_for_post_timeout_error(mocker):
+    """ Test the get_comm_for_post() method when a timeout error occurs. """
+
+    # Simulate a Timeout in a GET request
+    mocker.patch('requests.get', side_effect=requests.exceptions.Timeout)
+    # Validate that the result is an empty list
+    result = api_calls.get_comm_for_post(1)
+    assert result == []
+
+
+def test_get_comm_for_post_http_error(mocker):
+    """ Test the get_comm_for_post() method when an HTTP error occurs. """
+
+    # Simulate an HTTPError in a GET request
+    mocker.patch('requests.get', side_effect=requests.exceptions.HTTPError)
+    # Validate that the result is an empty list
+    result = api_calls.get_comm_for_post(1)
+    assert result == []
+
+
+######################### post_comment() method tests ##########################
+    
+
+def test_post_comment_valid(mocker):
+    """ Test the post_comment() method for a valid comment. """
+
+    # A dictionary to be returned from mock API
+    data = {'postId': 1, 
+            'id': 501, 
+            'name': 'John Smith', 
+            'email': 'jsmith@gmail.com',
+            'body': 'body'}
+
+    # Set up a Mock() object that simulates an API endpoint for local testing
+    mocker_post = mocker.patch('requests.post')
+    mocker_post.return_value = mocker.Mock()
+
+    # Mock() object returns the created comment
+    mocker_post.return_value.json.return_value = data
+
+    # Call the post_comment() method with valid comment data
+    result = api_calls.post_comment(1, 'John Smith', 'jsmith@gmail.com', 'body')
+    logging.info(f'\n\nRESULTS RETURNED BY THIS METHOD: {result}\n')
+
+    # Validate the result
+    assert result.json() == data
+
+
+def test_post_comment_connection_error(mocker):
+    """ Test the post_comment() method when a connection error occurs. """
+
+    # Simulate a ConnectionError in a POST request
+    mocker.patch('requests.post', side_effect=requests.exceptions.ConnectionError)
+    
+    # Pass sample data to the post_comment() method
+    result = api_calls.post_comment(1, 'John Smith', 'jsmith@gmail.com', 'body')
+    logging.info(f'\n\nRESULTS RETURNED BY THIS METHOD: {result}\n')
+
+    # Validate that the result is an empty dictionary
+    assert result == {}
+
+def test_post_comment_timeout_error(mocker):
+    """ Test the post_comment() method when a timeout error occurs. """
+
+    # Simulate a Timeout in a POST request
+    mocker.patch('requests.post', side_effect=requests.exceptions.Timeout)
+    
+    # Pass sample data to the post_comment() method
+    result = api_calls.post_comment(1, 'John Smith', 'jsmith@gmail.com', 'body')
+    logging.info(f'\n\nRESULTS RETURNED BY THIS METHOD: {result}\n')
+
+    # Validate the result is an empty dictionary
+    assert result == {}
+
+def test_post_comment_http_error(mocker):
+    """ Test the post_comment() method when an HTTP error occurs. """
+
+    # Simulate an HTTPError in a POST request
+    mocker.patch('requests.post', side_effect=requests.exceptions.HTTPError)
+    
+    # Pass sample data to the post_comment() method
+    result = api_calls.post_comment(1, 'John Smith', 'jsmith@gmail.com', 'body')
+    logging.info(f'\n\nRESULTS RETURNED BY THIS METHOD: {result}\n')
+
+    # Validate the result is an empty dictionary
+    assert result == {}
+
+
+######################## delete_comments() method tests ########################
+    
+
+def test_delete_comments_valid(mocker):
+    """ Test the delete_comments() method for a valid comment. """
+
+    # Set up a Mock() object that simulates an API endpoint for local testing
+    mocker_delete = mocker.patch('requests.delete')
+    # Send status code 200 to indicate successful deletion
+    mocker_delete.return_value = mocker.Mock(status_code=200)
+
+    # Call the delete_comments() method
+    result = api_calls.delete_comment(1)
+
+    # Validate the result's status code ass successful
+    assert result.status_code == 200
+
+
+def test_delete_comment_invalid_id(mocker):
+    """ Test the delete_comments() method for an invalid comment ID. """
+
+    # Set up a Mock() object that simulates an API endpoint for local testing
+    mocker_delete = mocker.patch('requests.delete')
+    # Send status code 404 to indicate that the comment ID is not found
+    mocker_delete.return_value = mocker.Mock(status_code=404)
+
+    # Call the delete_comments() method
+    result = api_calls.delete_comment(999)
+
+    # Validate the result's status code as 404
+    assert result.status_code == 404
+
+
+def test_delete_comment_connection_error(mocker):
+    """ Test the delete_comments() method when a connection error occurs. """
+
+    # Set up a Mock() object that simulates an API endpoint for local testing
+    mocker_delete = mocker.patch('requests.delete')
+    # Simulate a connection error by raising a requests.exceptions.ConnectionError
+    mocker_delete.side_effect = requests.exceptions.ConnectionError
+
+    # Call the delete_comments() method
+    result = api_calls.delete_comment(1)
+
+    # Validate that the result is an empty dictionary
+    assert result == {}
+
+
+def test_delete_comment_timeout_error(mocker):
+    """ Test the delete_comments() method when a timeout error occurs. """
+
+    # Set up a Mock() object that simulates an API endpoint for local testing
+    mocker_delete = mocker.patch('requests.delete')
+    # Simulate a timeout error by raising a requests.exceptions.Timeout
+    mocker_delete.side_effect = requests.exceptions.Timeout
+
+    # Call the delete_comments() method
+    result = api_calls.delete_comment(1)
+
+    # Validate that the result is an empty dictionary
+    assert result == {}
+
+
+def test_delete_comment_http_error(mocker):
+    """ Test the delete_comments() method when an HTTP error occurs. """
+
+    # Set up a Mock() object that simulates an API endpoint for local testing
+    mocker_delete = mocker.patch('requests.delete')
+    # Simulate an HTTP error by raising a requests.exceptions.HTTPError
+    mocker_delete.side_effect = requests.exceptions.HTTPError
+
+    # Call the delete_comments() method
+    result = api_calls.delete_comment(1)
+
+    # Validate that the result is an empty dictionary
     assert result == {}
