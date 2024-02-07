@@ -103,3 +103,31 @@ def test_post_comment_remote_valid():
 
     # Validate that the result has the correct structure
     assert set(result.json().keys()) == {'postId', 'id', 'name', 'email', 'body'}
+
+
+######################## delete_comment() method tests #########################
+    
+
+def test_delete_comment_remote_valid():
+    """ Test the delete_comment() method for a valid comment ID """
+
+    # Call the delete_comment() method to delete a comment from the API
+    result = api_calls.delete_comment(1)
+    logging.info(f'\n\nRESULTS RETURNED BY THIS METHOD: {result}\n')
+
+    # Validate that the returned result is an empty dictionary
+    assert result.json() == {}
+    assert result.status_code == 200
+
+
+def test_delete_comment_remote_invalid_id():
+    """ Test the delete_comment() method for an invalid comment ID """
+
+    # Call the delete_comment() method to delete a comment from the API
+    result = api_calls.delete_comment('999')
+    logging.info(f'\n\nRESULTS RETURNED BY THIS METHOD: {result}\n')
+
+    # Validate that the returned result is an empty dictionary
+    assert result.json() == {}
+    # The remote API does not return correct error codes for invalid IDs
+    assert result.status_code == 200

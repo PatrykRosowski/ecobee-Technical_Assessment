@@ -328,3 +328,81 @@ def test_post_comment_http_error(mocker):
 
     # Validate the result is an empty dictionary
     assert result == {}
+
+
+######################## delete_comments() method tests ########################
+    
+
+def test_delete_comments_valid(mocker):
+    """ Test the delete_comments() method for a valid comment. """
+
+    # Set up a Mock() object that simulates an API endpoint for local testing
+    mocker_delete = mocker.patch('requests.delete')
+    # Send status code 200 to indicate successful deletion
+    mocker_delete.return_value = mocker.Mock(status_code=200)
+
+    # Call the delete_comments() method
+    result = api_calls.delete_comment(1)
+
+    # Validate the result's status code ass successful
+    assert result.status_code == 200
+
+
+def test_delete_comment_invalid_id(mocker):
+    """ Test the delete_comments() method for an invalid comment ID. """
+
+    # Set up a Mock() object that simulates an API endpoint for local testing
+    mocker_delete = mocker.patch('requests.delete')
+    # Send status code 404 to indicate that the comment ID is not found
+    mocker_delete.return_value = mocker.Mock(status_code=404)
+
+    # Call the delete_comments() method
+    result = api_calls.delete_comment(999)
+
+    # Validate the result's status code as 404
+    assert result.status_code == 404
+
+
+def test_delete_comment_connection_error(mocker):
+    """ Test the delete_comments() method when a connection error occurs. """
+
+    # Set up a Mock() object that simulates an API endpoint for local testing
+    mocker_delete = mocker.patch('requests.delete')
+    # Simulate a connection error by raising a requests.exceptions.ConnectionError
+    mocker_delete.side_effect = requests.exceptions.ConnectionError
+
+    # Call the delete_comments() method
+    result = api_calls.delete_comment(1)
+
+    # Validate that the result is an empty dictionary
+    assert result == {}
+
+
+def test_delete_comment_timeout_error(mocker):
+    """ Test the delete_comments() method when a timeout error occurs. """
+
+    # Set up a Mock() object that simulates an API endpoint for local testing
+    mocker_delete = mocker.patch('requests.delete')
+    # Simulate a timeout error by raising a requests.exceptions.Timeout
+    mocker_delete.side_effect = requests.exceptions.Timeout
+
+    # Call the delete_comments() method
+    result = api_calls.delete_comment(1)
+
+    # Validate that the result is an empty dictionary
+    assert result == {}
+
+
+def test_delete_comment_http_error(mocker):
+    """ Test the delete_comments() method when an HTTP error occurs. """
+
+    # Set up a Mock() object that simulates an API endpoint for local testing
+    mocker_delete = mocker.patch('requests.delete')
+    # Simulate an HTTP error by raising a requests.exceptions.HTTPError
+    mocker_delete.side_effect = requests.exceptions.HTTPError
+
+    # Call the delete_comments() method
+    result = api_calls.delete_comment(1)
+
+    # Validate that the result is an empty dictionary
+    assert result == {}
