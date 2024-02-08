@@ -65,6 +65,7 @@ def view_post(post_id):
         # Display the post
         utils.display_post(post)
         # Ask the user if they would like to view comments for this post
+        # and validate their input
         if not utils.ask_view_comments():
             return
     # If an error occurs, display a message stating so
@@ -92,6 +93,7 @@ def view_comments(post_id):
         for comment in comments:
             utils.display_comment(comment)
         # Ask the user if they would like to add or delete a comment
+        # and validate their input
         if not utils.add_del_comments(post_id):
             return
     # If an error occurs, display a message stating so
@@ -162,6 +164,7 @@ def main():
             case "2":
                 utils.clear()
                 post_id = input("Please enter the ID of the post: ")
+                # Validate the ID entered by the user
                 if not utils.validate_id(post_id):
                     continue
                 view_post(post_id)
@@ -177,6 +180,10 @@ def main():
                 if not utils.validate_id(post_id):
                     continue
                 name, email, body = utils.comment_details()
+                # If the user did not provide valid comment details, 
+                # return to the main menu
+                if name is None or email is None or body is None:
+                    continue
                 add_comment(post_id, name, email, body)
             case "5":
                 utils.clear()
