@@ -140,5 +140,3 @@ def delete_comment(comment_id):
     except (Exception) as err:
         logging.error(f'An error occurred while processing the request: {err}')
         return {}
-
-delete_comment(1)
